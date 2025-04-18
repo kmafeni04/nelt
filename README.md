@@ -9,6 +9,7 @@ This function must take `tp: *nelt.Template` as it's first argument, else you wo
 
 ```text
 -- file.nelt
+{[ a comment ]}
 {# local nelt = require "path.to.nelt" #}
 {# local function test(tp: *nelt.Template, str: string) #}
   {{ "<escaped val>" }}
@@ -48,8 +49,9 @@ print(tp:tostring())
 The following syntax is supported:
 
 - `{# ... #}`: This is for nelua expressions and will be replaced as is
-- `{{- ... }}`: This for unescaped values and will be wrapped with `tp:write()`
-- `{{ ... }}`: This for escaped values and will be wrapped with `tp:escape()`
+- `{{- ... }}`: This is for unescaped values and will be wrapped with `tp:write()`
+- `{{ ... }}`: This is for escaped values and will be wrapped with `tp:escape()`
+- `{[ ... ]}`: This is for comments, anything in these will not be added to the final output
 
 
 ### Function

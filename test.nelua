@@ -1,12 +1,13 @@
 local nelt = require ".nelt"
 
 do
-  local text = [[
+  local text = [=[
 {# expression #}
+{[ comment ]}
 {{ "<escaped val>" }}
 text
 {{- "<unescaped val>" }}
-]]
+]=]
   local expected = 'expression\ntp:escape("<escaped val>")\ntp:write([[text]])\ntp:write("<unescaped val>")\n'
   local result = nelt.compile(text)
   assert(expected == result)

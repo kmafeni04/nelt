@@ -35,11 +35,14 @@ end
 
 function nelt.compile(text: string): string
 
+  text = text:gsub("{%[.-%]}", "") -- comments
+
   local nelua_expr: sequence(string)
   local nelua_raw_val: sequence(string)
   local nelua_val: sequence(string)
 
 --------------------------------------------------------
+  
   for _, text_seq in text:gmatch("{#(.-)#}") do
     nelua_expr:push(trim_wspace(text_seq[0]))
   end
