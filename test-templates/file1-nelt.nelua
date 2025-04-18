@@ -1,0 +1,11 @@
+local nelt = require "nelt"
+local function test(tp: *nelt.Template, str: string)
+for i = 1, 2 do
+tp:write([[<h1 name="]])
+tp:escape(str)
+tp:write([[">]])
+tp:write(str)
+tp:write([[</h1>]])
+end
+end
+return test

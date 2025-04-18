@@ -1,0 +1,9 @@
+{# local nelt = require "nelt" #}
+
+{# local function test(tp: *nelt.Template, str: string) #}
+  {# for i = 1, 2 do #}
+    <h1 name="{{str}}">{{-str}}</h1>
+  {# end #}
+{# end #}
+
+{# return test #}

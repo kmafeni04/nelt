@@ -1,0 +1,118 @@
+require "string"
+require "stringbuilder"
+require "io"
+
+local function trim_wspace(s: string): string
+  local _, str_seq = s:match("^%s*(.-)%s*$")
+  return str_seq[1]
+end
+
+local nelt = @record{}
+
+local nelt.Template = @record{
+  buf: stringbuilder
+}
+
+function nelt.Template:write(s: string)
+  self.buf:write(s)
+end
+
+local chars_to_escape: hashmap(string, string) 
+chars_to_escape["&"] = "&amp;"
+chars_to_escape["<"] = "&lt;"
+chars_to_escape[">"] = "&gt;"
+chars_to_escape['"'] = "&quot;"
+chars_to_escape["'"] = "&#039;"
+
+function nelt.Template:escape(s: string)
+  s = s:gsub([=[[&<>"']]=], chars_to_escape)
+  self.buf:write(s)
+end
+
+function nelt.Template:tostring(): string
+  return self.buf:promote()
+end
+
+function nelt.compile(text: string): string
+
+  local nelua_expr: sequence(string)
+  local nelua_raw_val: sequence(string)
+  local nelua_val: sequence(string)
+
+--------------------------------------------------------
+  for _, text_seq in text:gmatch("{#(.-)#}") do
+    nelua_expr:push(trim_wspace(text_seq[0]))
+  end
+
+  text = text:gsub("{#.-#}", "\1")
+
+  for _, text_seq in text:gmatch("{{%-(.-)}}") do
+    nelua_raw_val:push(trim_wspace(text_seq[0]))
+  end
+
+  text = text:gsub("{{%-.-}}", "\2")
+
+  for _, text_seq in text:gmatch("{{(.-)}}") do
+    nelua_val:push(trim_wspace(text_seq[0]))
+  end
+
+  text = text:gsub("{{.-}}", "\3")
+
+-------------------------------------------------------
+
+  text = trim_wspace(text)
+
+  text = text:gsub("[^\1\2\3]+", function(s: string): string
+    s = trim_wspace(s)
+    if s == "" then return "" end
+    return ("tp:write([[%s]])\n"):format(s)
+  end)
+
+  local expr_i = 1
+  for _ in text:gmatch("\1") do
+    text = text:gsub("\1", nelua_expr[expr_i] .. "\n", 1)
+    expr_i = expr_i + 1
+  end
+
+  local raw_val_i = 1
+  for _ in text:gmatch("\2") do
+    local replace = ("tp:write(%s)\n"):format(nelua_raw_val[raw_val_i])
+    text = text:gsub("\2", replace, 1)
+    raw_val_i = raw_val_i + 1
+  end
+  
+  local val_i = 1
+  for _ in text:gmatch("\3") do
+    local replace = ("tp:escape(%s)\n"):format(nelua_val[val_i])
+    text = text:gsub("\3", replace, 1)
+    val_i = val_i + 1
+  end
+
+  return text
+end
+
+function nelt.compile_file(file_path: string): (boolean, string)
+  local file = io.open(file_path, "r")
+  if not file:isopen() then
+    return false, ("failed to open file at path `%s`"):format(file_path)
+  end
+  defer file:close() end
+  local content = file:read("a")
+  local name_match, name_seq = file_path:match("([^/]+%.nelt)$") 
+  if not name_match then
+    return false, "failed to parse file name from file_path"
+  end
+  local file_name = name_seq[1]:gsub("%.", "-")
+  local dir = file_path:sub(1, #file_path - #file_name)
+  local new_file_path = dir .. file_name .. ".nelua"
+  local new_file = io.open(new_file_path, "w")
+  if not new_file:isopen() then
+    return false, ("failed to write to file at path `%s`"):format(file_name)
+  end
+  local template = nelt.compile(content)
+  new_file:write(template)
+  new_file:close()
+  return true, ""
+end
+
+return nelt

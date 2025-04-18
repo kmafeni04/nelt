@@ -1,0 +1,39 @@
+local nelt = require "nelt"
+
+##[[
+  local function get_files(path)
+    static_assert(type(path) == "string", "path must be of type `string`")
+
+    local changed_dir, err = lfs.chdir(path)
+    static_assert(changed_dir, ("ERROR: %s"):format(err))
+
+    local current_dir, err = lfs.currentdir()
+    static_assert(current_dir, ("ERROR: %s"):format(err))
+
+    local function loop_dir(dir, files)
+      for file in lfs.dir(dir) do
+        if file ~= ".." and file ~= "." then
+          local f = dir .. "/" .. file
+          local attr = lfs.attributes(f)
+          if attr.mode == "directory" then
+            loop_dir(f, files)
+          else
+            if file:match(".+%.nelt$") then
+              table.insert(files, dir .. "/" .. file)
+            end
+          end
+        end
+      end
+      return files
+    end
+
+    return loop_dir(current_dir, {})
+  end
+]]
+
+local templates: []string = #[get_files(".")]#
+
+for _, template in ipairs(templates) do
+  local ok, err = nelt.compile_file(template)
+  assert(ok, err)
+end

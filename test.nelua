@@ -1,0 +1,29 @@
+local nelt = require ".nelt"
+
+do
+  local text = [[
+{# expression #}
+{{ "<escaped val>" }}
+text
+{{- "<unescaped val>" }}
+]]
+  local expected = 'expression\ntp:escape("<escaped val>")\ntp:write([[text]])\ntp:write("<unescaped val>")\n'
+  local result = nelt.compile(text)
+  assert(expected == result)
+end
+
+do
+  local ok, err = nelt.compile_file("./test-templates/file1.nelt")
+  assert(ok, err)
+end
+
+do
+  local file1 = require("test-templates.file1-nelt")
+  local tp: nelt.Template
+  file1(&tp, "&hello world")
+  local expected = '<h1 name="&amp;hello world">&hello world</h1><h1 name="&amp;hello world">&hello world</h1>'
+  local result = tp:tostring()
+  assert(expected == result)
+end
+
+print("All tests passed")
