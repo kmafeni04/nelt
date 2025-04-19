@@ -7,17 +7,17 @@ Nelt is a super simple templating language that compiles to nelua code
 Create a template file that returns a function
 This function must take `tp: *nelt.Template` as it's first argument, else you won't be able to get anything from the file
 
-```text
+```lua
 -- file.nelt
-{[ a comment ]}
-{# local nelt = require "path.to.nelt" #}
-{# local function test(tp: *nelt.Template, str: string) #}
+{# a comment #}
+{% local nelt = require "path.to.nelt" %}
+{% local function test(tp: *nelt.Template, str: string) %}
   {{ "<escaped val>" }}
   text
   {{ str }}
   {{- "<unescaped val>" }}
-{# end #}
-{# return test #}
+{% end %}
+{% return test %}
 ```
 
 Compile files before trying to require them in main program
@@ -48,10 +48,10 @@ print(tp:tostring())
 
 The following syntax is supported:
 
-- `{# ... #}`: This is for nelua expressions and will be replaced as is
+- `{% ... %}`: This is for nelua expressions and will be replaced as is
 - `{{- ... }}`: This is for unescaped values and will be wrapped with `tp:write()`
 - `{{ ... }}`: This is for escaped values and will be wrapped with `tp:escape()`
-- `{[ ... ]}`: This is for comments, anything in these will not be added to the final output
+- `{# ... #}`: This is for comments, anything in these will not be added to the final output
 
 
 ### Function

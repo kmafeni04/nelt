@@ -35,7 +35,7 @@ end
 
 function nelt.compile(text: string): string
 
-  text = text:gsub("{%[.-%]}", "") -- comments
+  text = text:gsub("{#.-#}", "") -- comments
 
   local nelua_expr: sequence(string)
   local nelua_raw_val: sequence(string)
@@ -43,11 +43,11 @@ function nelt.compile(text: string): string
 
 --------------------------------------------------------
   
-  for _, text_seq in text:gmatch("{#(.-)#}") do
+  for _, text_seq in text:gmatch("{%%(.-)%%}") do
     nelua_expr:push(trim_wspace(text_seq[0]))
   end
 
-  text = text:gsub("{#.-#}", "\1")
+  text = text:gsub("{%%.-%%}", "\1")
 
   for _, text_seq in text:gmatch("{{%-(.-)}}") do
     nelua_raw_val:push(trim_wspace(text_seq[0]))

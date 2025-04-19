@@ -2,8 +2,8 @@ local nelt = require ".nelt"
 
 do
   local text = [=[
-{# expression #}
-{[ comment ]}
+{% expression %}
+{# comment #}
 {{ "<escaped val>" }}
 text
 {{- "<unescaped val>" }}
