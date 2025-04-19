@@ -1,0 +1,30 @@
+{% local nelt = require "....nelt" %}
+{% local function base_layout(tp: *nelt.Template, title: string, content: function(tp: *nelt.Template)) %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{ title }}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body>
+    <header>
+      <h1>{{ title }}</h1>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="/contact">Contact</a></li>
+        </ul>
+      </nav>
+    </header>
+    <main>
+    {% content(tp) %}
+    </main>
+    <footer>
+      <p>&copy; 2025 My Nelua App</p>
+    </footer>
+  </body>
+</html>
+{% end %}
+{% return base_layout %}

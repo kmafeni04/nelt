@@ -1,0 +1,5 @@
+{% local nelt = require "....nelt" %}
+{% local function button(tp: *nelt.Template, text: string, type: string, classes: string) %}
+<button type="{{ type ~= "" and type or 'button' }}" class="btn {{ classes ~= "" and " " .. classes or '' }}">{{ text }}</button>
+{% end %}
+{% return button %}

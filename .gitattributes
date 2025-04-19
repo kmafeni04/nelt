@@ -1,2 +1,3 @@
 *.nelua text eol=lf linguist-language=lua
+*.nelt text eol=lf linguist-language=html
 

@@ -44,6 +44,8 @@ print(tp:tostring())
 -- &lt;escaped val&gt;textnhello<unescaped val>
 ```
 
+For more complex examples, check the [examples](./examples) folder
+
 ## Reference
 
 The following syntax is supported:

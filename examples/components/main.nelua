@@ -1,0 +1,12 @@
+local nelt = require "...nelt"
+local page = require "templates.page-nelt"
+
+local function render_page()
+  local tp: nelt.Template
+  page(&tp)
+  return tp:tostring()
+end
+
+-- Now you could use render_page() in your application
+print(render_page())
+

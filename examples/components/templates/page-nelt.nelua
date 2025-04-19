@@ -1,0 +1,18 @@
+local nelt = require "....nelt"
+local base_layout = require ".layout-nelt"
+local button = require ".button-nelt"
+local function page_content(tp: *nelt.Template)
+tp:write([[<div class="container">
+    <h2>Welcome to our page</h2>
+    <p>This is some content for our page.</p>
+    
+    <div class="actions">]])
+button(tp, "Save", "submit", "primary")
+button(tp, "Cancel", "button", "secondary")
+tp:write([[</div>
+  </div>]])
+end
+local function page(tp: *nelt.Template)
+base_layout(tp, "My Page Title", page_content)
+end
+return page
