@@ -1,6 +1,6 @@
 # nelt (NELua Templates)
 
-Nelt is a super simple templating language that compiles to nelua code
+Nelt is a super simple templating language with [jinja](https://github.com/pallets/jinja) inspired syntax that compiles to nelua code for you to run
 
 ## Quick Start
 
@@ -41,7 +41,7 @@ local file = require "file-nelt"
 local tp: nelt.Template
 file(&tp, "hello")
 print(tp:tostring())
--- &lt;escaped val&gt;texthello<unescaped val>
+-- &lt;escaped val&gt;textnhello<unescaped val>
 ```
 
 ## Reference
@@ -49,19 +49,49 @@ print(tp:tostring())
 The following syntax is supported:
 
 - `{% ... %}`: This is for nelua expressions and will be replaced as is
-- `{{- ... }}`: This is for unescaped values and will be wrapped with `tp:write()`
-- `{{ ... }}`: This is for escaped values and will be wrapped with `tp:escape()`
+- `{{ ... }}`: This is for html escaped values and will be wrapped with `tp:escape()`
+- `{{- ... }}`: This is for html unescaped values and will be wrapped with `tp:write()`
 - `{# ... #}`: This is for comments, anything in these will not be added to the final output
 
 
-### Function
+### Functions
 
 #### nelt.compile_file(file_path: string): (boolean, string)
 
-Takes a file and compiles into into the nelua code you will require for you template
+Takes a file and compiles into into the nelua code you will require for your template
+
+#### nelt.Template:write(s: string): void
+
+Writes the string `s` to the internal buffer of the template without html escaping it
+
+#### nelt.Template:escape(s: string): void
+
+Writes the string `s` to the internal buffer of the template while html escaping it
+
+#### nelt.Template:tostring(): string
+
+Returns a view of the current buffer but doesn't clear it
+
+#### nelt.Template:destory(): void
+
+Clears the buffer and resets the structure to a zeroed state
+
+### Types
+
+#### nelt.Template
+
+```lua
+local nelt.Template = @record{
+  buf: stringbuilder
+}
+```
 
 ### Note
 
 The file [nelt-compile.nelua](./nelt-compile.nelua) is an example on how to compile all templates in a directory
 
 Simply replace the string in the `get_files` macro call to use where you'd like
+
+## Acknowledgement
+
+The idea for this project originally stemmed from [this](https://www.omarpolo.com/post/template.html) blog post

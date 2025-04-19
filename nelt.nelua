@@ -13,6 +13,11 @@ local nelt.Template = @record{
   buf: stringbuilder
 }
 
+function nelt.Template:destory()
+  self.buf:destroy()
+  self = (@*nelt.Template)()
+end
+
 function nelt.Template:write(s: string)
   self.buf:write(s)
 end
@@ -30,7 +35,7 @@ function nelt.Template:escape(s: string)
 end
 
 function nelt.Template:tostring(): string
-  return self.buf:promote()
+  return self.buf:view()
 end
 
 function nelt.compile(text: string): string
