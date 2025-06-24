@@ -72,6 +72,10 @@ Writes the string `s` to the internal buffer of the template while html escaping
 
 #### nelt.Template:tostring(): string
 
+Returns the contents of the current buffer and clears it
+
+#### nelt.Template:view(): string
+
 Returns a view of the current buffer but doesn't clear it
 
 #### nelt.Template:destory(): void

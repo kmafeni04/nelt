@@ -35,6 +35,10 @@ function nelt.Template:escape(s: string)
 end
 
 function nelt.Template:tostring(): string
+  return self.buf:promote()
+end
+
+function nelt.Template:view(): string
   return self.buf:view()
 end
 
