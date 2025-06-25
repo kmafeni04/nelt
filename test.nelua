@@ -7,8 +7,10 @@ do
 {{ "<escaped val>" }}
 text
 {{- "<unescaped val>" }}
+[[string]]
 ]=]
-  local expected = 'expression\ntp:escape("<escaped val>")\ntp:write([[text]])\ntp:write("<unescaped val>")\n'
+  local expected =
+    'expression\ntp:escape("<escaped val>")\ntp:write([====[text]====])\ntp:write("<unescaped val>")\ntp:write([====[[[string]]]====])\n'
   local result = nelt.compile(text)
   assert(expected == result)
 end
