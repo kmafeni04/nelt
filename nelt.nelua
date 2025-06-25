@@ -77,7 +77,7 @@ function nelt.compile(text: string): string
   text = text:gsub("[^\1\2\3]+", function(s: string): string
     s = trim_wspace(s)
     if s == "" then return "" end
-    return ("tp:write([[%s]])\n"):format(s)
+    return ("tp:write([====[%s]====])\n"):format(s)
   end)
 
   local expr_i = 1

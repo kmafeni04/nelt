@@ -1,11 +1,11 @@
 local nelt = require "....nelt"
 local function button(tp: *nelt.Template, text: string, type: string, classes: string)
-tp:write([[<button type="]])
+tp:write([====[<button type="]====])
 tp:escape(type ~= "" and type or 'button')
-tp:write([[" class="btn]])
+tp:write([====[" class="btn]====])
 tp:escape(classes ~= "" and " " .. classes or '')
-tp:write([[">]])
+tp:write([====[">]====])
 tp:escape(text)
-tp:write([[</button>]])
+tp:write([====[</button>]====])
 end
 return button
