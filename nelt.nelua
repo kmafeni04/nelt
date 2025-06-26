@@ -7,6 +7,11 @@ local function trim_wspace(s: string): string
   return str_seq[1]
 end
 
+local function escape_percent(s: string)
+  local s = s:gsub("%%", "%%%%")
+  return s
+end
+
 local nelt = @record{}
 
 local nelt.Template = @record{
@@ -82,20 +87,21 @@ function nelt.compile(text: string): string
 
   local expr_i = 1
   for _ in text:gmatch("\1") do
-    text = text:gsub("\1", nelua_expr[expr_i] .. "\n", 1)
+    local replace = escape_percent(nelua_expr[expr_i] .. "\n")
+    text = text:gsub("\1", replace, 1)
     expr_i = expr_i + 1
   end
 
   local raw_val_i = 1
   for _ in text:gmatch("\2") do
-    local replace = ("tp:write(%s)\n"):format(nelua_raw_val[raw_val_i])
+    local replace = ("tp:write(%s)\n"):format(escape_percent(nelua_raw_val[raw_val_i]))
     text = text:gsub("\2", replace, 1)
     raw_val_i = raw_val_i + 1
   end
   
   local val_i = 1
   for _ in text:gmatch("\3") do
-    local replace = ("tp:escape(%s)\n"):format(nelua_val[val_i])
+    local replace = ("tp:escape(%s)\n"):format(escape_percent(nelua_val[val_i]))
     text = text:gsub("\3", replace, 1)
     val_i = val_i + 1
   end

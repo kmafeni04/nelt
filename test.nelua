@@ -6,11 +6,11 @@ do
 {# comment #}
 {{ "<escaped val>" }}
 text
-{{- "<unescaped val>" }}
+{{- "%<unescaped val>%" }}
 [[string]]
 ]=]
   local expected =
-    'expression\ntp:escape("<escaped val>")\ntp:write([====[text]====])\ntp:write("<unescaped val>")\ntp:write([====[[[string]]]====])\n'
+    'expression\ntp:escape("<escaped val>")\ntp:write([====[text]====])\ntp:write("%<unescaped val>%")\ntp:write([====[[[string]]]====])\n'
   local result = nelt.compile(text)
   assert(expected == result)
 end
