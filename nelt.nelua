@@ -15,7 +15,8 @@ end
 local nelt = @record{}
 
 local nelt.Template = @record{
-  buf: stringbuilder
+  buf: stringbuilder,
+  data: pointer
 }
 
 function nelt.Template:destroy()
