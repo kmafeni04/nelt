@@ -16,8 +16,8 @@ text
 end
 
 do
-  local ok, err = nelt.compile_file("./test-templates/file1.nelt")
-  assert(ok, err)
+  local err = nelt.compile_file("./test-templates/file1.nelt")
+  assert(err == "", err)
 end
 
 do

@@ -12,20 +12,39 @@ local function escape_percent(s: string)
   return s
 end
 
+--- ### nelt module
+---`
 local nelt = @record{}
+---`
 
+--- ### nelt.Template 
+--[[-
+Contains the methods used to generate the template
+- `buf`: Buffer where generated code is appended to
+- `data`: Arbitray data that can be set by the user and used within a template
+-]]
+---`
 local nelt.Template = @record{
   buf: stringbuilder,
   data: pointer
 }
+---`
 
+--- ### nelt.Template:destroy
+--- Clears and destroys the internal buffer and sets data to a nilptr
+---`
 function nelt.Template:destroy()
+---`
   self.buf:destroy()
   self = (@*nelt.Template)()
 end
 
-function nelt.Template:write(s: string)
-  self.buf:write(s)
+--- ### nelt.Template:write
+--- Appends `v` to the template buffer as is
+---`
+function nelt.Template:write(v: auto)
+---`
+  self.buf:write(v)
 end
 
 local chars_to_escape: hashmap(string, string) 
@@ -35,20 +54,37 @@ chars_to_escape[">"] = "&gt;"
 chars_to_escape['"'] = "&quot;"
 chars_to_escape["'"] = "&#039;"
 
-function nelt.Template:escape(s: string)
-  s = s:gsub([=[[&<>"']]=], chars_to_escape)
-  self.buf:write(s)
+--- ### nelt.Template:escape
+--- Html Escapes `v` then appends it to the template buffer
+---`
+function nelt.Template:escape(v: auto)
+---`
+  local temp_str1 <close> = tostring(v)
+  local temp_str2 = temp_str1:gsub([=[[&<>"']]=], chars_to_escape)
+  self.buf:write(temp_str2)
 end
 
+--- ### nelt.Template:tostring
+--- Returns the content of the template buffer and clears it
+---`
 function nelt.Template:tostring(): string
+---`
   return self.buf:promote()
 end
 
+--- ### nelt.Template:view
+--- Returns a view to the template buffer
+---`
 function nelt.Template:view(): string
+---`
   return self.buf:view()
 end
 
+--- ### nelt.compile
+--- Returns generated code from `text`
+---`
 function nelt.compile(text: string): string
+---`
 
   text = text:gsub("{#.-#}", "") -- comments
 
@@ -56,6 +92,7 @@ function nelt.compile(text: string): string
   local nelua_raw_val: sequence(string)
   local nelua_val: sequence(string)
 
+---|
 --------------------------------------------------------
   
   for _, text_seq in text:gmatch("{%%(.-)%%}") do
@@ -77,6 +114,7 @@ function nelt.compile(text: string): string
   text = text:gsub("{{.-}}", "\3")
 
 -------------------------------------------------------
+---|
 
   text = trim_wspace(text)
 
@@ -110,28 +148,35 @@ function nelt.compile(text: string): string
   return text
 end
 
-function nelt.compile_file(file_path: string): (boolean, string)
+--- ### nelt.compile_file
+--[[-
+Reads the file at `file_path` and generates code at the same location
+Returns a none empty string on error
+-]]
+---`
+function nelt.compile_file(file_path: string): string
+---`
   local file = io.open(file_path, "r")
   if not file:isopen() then
-    return false, ("failed to open file at path `%s`"):format(file_path)
+    return ("failed to open file at path `%s`"):format(file_path)
   end
   defer file:close() end
   local content = file:read("a")
   local name_match, name_seq = file_path:match("([^/]+%.nelt)$") 
   if not name_match then
-    return false, "failed to parse file name from file_path"
+    return "failed to parse file name from file_path"
   end
   local file_name = name_seq[1]:gsub("%.", "-")
   local dir = file_path:sub(1, #file_path - #file_name)
   local new_file_path = dir .. file_name .. ".nelua"
   local new_file = io.open(new_file_path, "w")
   if not new_file:isopen() then
-    return false, ("failed to write to file at path `%s`"):format(file_name)
+    return ("failed to write to file at path `%s`"):format(file_name)
   end
   local template = nelt.compile(content)
   new_file:write(template)
   new_file:close()
-  return true, ""
+  return ""
 end
 
 return nelt

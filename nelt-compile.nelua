@@ -34,6 +34,6 @@ local nelt = require "nelt"
 local templates: []string = #[get_files(".")]#
 
 for _, template in ipairs(templates) do
-  local ok, err = nelt.compile_file(template)
-  assert(ok, err)
+  local err = nelt.compile_file(template)
+  assert(err == "", err)
 end
